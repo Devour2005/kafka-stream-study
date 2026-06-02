@@ -1,6 +1,6 @@
-package com.kafkastreamstudy.listener;
+package com.kafkastreamstudynew.listener;
 
-import com.kafkastreamstudy.model.AlertMessage;
+import com.kafkastreamstudynew.model.AlertMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

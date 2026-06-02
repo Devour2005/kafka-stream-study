@@ -1,4 +1,4 @@
-package com.kafkastreamstudy.model;
+package com.kafkastreamstudynew.model;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

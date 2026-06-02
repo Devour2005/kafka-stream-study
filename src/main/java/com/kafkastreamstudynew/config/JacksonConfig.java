@@ -1,4 +1,4 @@
-package com.kafkastreamstudy.config;
+package com.kafkastreamstudynew.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

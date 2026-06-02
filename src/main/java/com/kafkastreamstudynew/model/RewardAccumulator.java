@@ -1,4 +1,4 @@
-package ru.otus.model.purchase;
+package com.kafkastreamstudynew.model;
 
 import lombok.Builder;
 import lombok.Value;

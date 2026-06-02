@@ -1,10 +1,13 @@
-package com.kafkastreamstudy.config;
+package com.kafkastreamstudynew.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kafkastreamstudy.model.AlertMessage;
-import com.kafkastreamstudy.model.OrderMessage;
+import com.kafkastreamstudynew.model.AlertMessage;
+import com.kafkastreamstudynew.model.OrderMessage;
+import com.kafkastreamstudynew.model.Purchase;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -28,6 +31,7 @@ public class KafkaConfig {
 			ObjectMapper objectMapper) {
 
 		Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties(null));
+		stripJsonSerializerConfig(props);
 		JsonSerializer<OrderMessage> valueSerializer = new JsonSerializer<>(objectMapper);
 		valueSerializer.setAddTypeInfo(false);
 		return new DefaultKafkaProducerFactory<>(
@@ -43,14 +47,36 @@ public class KafkaConfig {
 	}
 
 	@Bean
+	public ProducerFactory<String, Purchase> purchaseProducerFactory(
+			KafkaProperties kafkaProperties,
+			ObjectMapper objectMapper) {
+
+		Map<String, Object> props = new HashMap<>(kafkaProperties.buildProducerProperties(null));
+		stripJsonSerializerConfig(props);
+		JsonSerializer<Purchase> valueSerializer = new JsonSerializer<>(objectMapper);
+		valueSerializer.setAddTypeInfo(false);
+		return new DefaultKafkaProducerFactory<>(
+				props,
+				new StringSerializer(),
+				valueSerializer);
+	}
+
+	@Bean
+	public KafkaTemplate<String, Purchase> purchaseKafkaTemplate(
+			ProducerFactory<String, Purchase> orderProducerFactory) {
+		return new KafkaTemplate<>(orderProducerFactory);
+	}
+
+	@Bean
 	public ConsumerFactory<String, AlertMessage> alertConsumerFactory(
 			KafkaProperties kafkaProperties,
 			ObjectMapper objectMapper) {
 
 		Map<String, Object> props = new HashMap<>(kafkaProperties.buildConsumerProperties(null));
+		stripJsonDeserializerConfig(props);
 		JsonDeserializer<AlertMessage> valueDeserializer =
 				new JsonDeserializer<>(AlertMessage.class, objectMapper);
-		valueDeserializer.addTrustedPackages("com.kafkastreamstudy.model");
+		valueDeserializer.addTrustedPackages("*");
 		valueDeserializer.setUseTypeHeaders(false);
 		return new DefaultKafkaConsumerFactory<>(
 				props,
@@ -66,5 +92,20 @@ public class KafkaConfig {
 				new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(alertConsumerFactory);
 		return factory;
+	}
+
+	private static void stripJsonSerializerConfig(Map<String, Object> props) {
+		props.remove(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG);
+		props.remove(JsonSerializer.ADD_TYPE_INFO_HEADERS);
+		props.remove(JsonSerializer.TYPE_MAPPINGS);
+	}
+
+	private static void stripJsonDeserializerConfig(Map<String, Object> props) {
+		props.remove(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG);
+		props.remove(JsonDeserializer.TRUSTED_PACKAGES);
+		props.remove(JsonDeserializer.USE_TYPE_INFO_HEADERS);
+		props.remove(JsonDeserializer.VALUE_DEFAULT_TYPE);
+		props.remove(JsonDeserializer.KEY_DEFAULT_TYPE);
+		props.remove(JsonDeserializer.TYPE_MAPPINGS);
 	}
 }

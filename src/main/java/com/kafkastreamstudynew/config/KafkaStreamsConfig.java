@@ -1,4 +1,4 @@
-package com.kafkastreamstudy.config;
+package com.kafkastreamstudynew.config;
 
 import java.util.HashMap;
 import java.util.Map;
