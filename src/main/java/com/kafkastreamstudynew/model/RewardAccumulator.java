@@ -1,12 +1,15 @@
 package com.kafkastreamstudynew.model;
 
+import jakarta.persistence.Entity;
 import lombok.Builder;
 import lombok.Value;
 
 @Builder(toBuilder = true)
 @Value
+//@Entity
 public class RewardAccumulator {
 
+    Integer rewardId;
     String customerId;
     double purchaseTotal;
     int totalRewardPoints;

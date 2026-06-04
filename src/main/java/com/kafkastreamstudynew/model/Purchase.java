@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+//@Entity
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,21 +29,17 @@ public class Purchase {
 	String storeId;
 
 	public static final class PurchaseBuilder {
-
 		private static final String CC_NUMBER_REPLACEMENT = "xxxx-xxxx-xxxx-";
 
 		public PurchaseBuilder maskCreditCard() {
 			Objects.requireNonNull(this.creditCardNumber, "Credit Card can't be null");
-
 			String[] parts = this.creditCardNumber.split("-");
-
 			if (parts.length < 4) {
 				this.creditCardNumber = "xxxx";
 			} else {
-				this.creditCardNumber =
-						CC_NUMBER_REPLACEMENT + parts[3];
+				String last4Digits = this.creditCardNumber.split("-")[3];
+				this.creditCardNumber = CC_NUMBER_REPLACEMENT + last4Digits;
 			}
-
 			return this;
 		}
 	}
